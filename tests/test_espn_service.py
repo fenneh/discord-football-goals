@@ -1,12 +1,50 @@
 """Tests for ESPN service parsing functions."""
 
+import io
+import json
+from datetime import date
 
+import pytest
+
+from src.config.competitions import EPL
+from src.services import espn_service
 from src.services.espn_service import (
     _parse_goal_events,
     _parse_single_event,
     get_match_display_name,
     get_match_score_display,
 )
+
+
+def test_fetch_matches_uses_cdn_scoreboard(monkeypatch):
+    event = {
+        "id": "123",
+        "date": "2026-09-20T13:00Z",
+        "status": {"type": {"name": "STATUS_SCHEDULED"}},
+        "competitions": [],
+    }
+    response = {"content": {"sbData": {"events": [event]}}}
+
+    def fake_urlopen(request, timeout):
+        assert request.full_url == (
+            "https://cdn.espn.com/core/soccer/scoreboard"
+            "?xhr=1&league=eng.1&date=20260920"
+        )
+        assert timeout == 15
+        return io.BytesIO(json.dumps(response).encode())
+
+    monkeypatch.setattr(espn_service, "urlopen", fake_urlopen)
+    matches = espn_service.fetch_matches_for_date(date(2026, 9, 20))
+    assert [match["id"] for match in matches] == ["123"]
+
+
+def test_fetch_failure_is_not_an_empty_match_day(monkeypatch):
+    def fail_urlopen(request, timeout):
+        raise OSError("feed unavailable")
+
+    monkeypatch.setattr(espn_service, "urlopen", fail_urlopen)
+    with pytest.raises(OSError, match="feed unavailable"):
+        espn_service.fetch_matches_for_date(date(2026, 9, 20), EPL)
 
 
 def _make_detail(event_type: str, minute: str, team: str, athletes: list, score_value: int = 1) -> dict:
@@ -161,6 +199,20 @@ class TestParseEvent:
         ]
         match = _parse_single_event(event)
         assert len(match["goals"]) == 1
+
+    def test_goal_team_id_resolves_to_team_name(self):
+        event = self._make_event("Arsenal", "Chelsea")
+        event["competitions"][0]["competitors"][0]["team"]["id"] = "359"
+        event["competitions"][0]["details"] = [
+            {
+                "type": {"text": "Goal"},
+                "clock": {"displayValue": "30'"},
+                "team": {"id": "359"},
+                "athletesInvolved": [_make_athlete("Saka")],
+            }
+        ]
+        match = _parse_single_event(event)
+        assert match["goals"][0]["team"] == "Arsenal"
 
     def test_no_competitions_returns_match_with_none_teams(self):
         event = {

@@ -16,6 +16,8 @@ from src.config.teams import premier_league_teams
         ("The Gunners [1] - 0 Spurs", "Arsenal"),
         ("Man Utd [2] - 1 Man City", "Manchester United"),
         ("The Blues [1] - 0 Liverpool", "Chelsea"),
+        ("Coventry City [1] - 0 Hull City", "Coventry City"),
+        ("Ipswich Town [1] - 0 Arsenal", "Ipswich Town"),
         # Case insensitivity
         ("ARSENAL [1] - 0 Chelsea", "Arsenal"),
         ("arsenal [1] - 0 chelsea", "Arsenal"),
@@ -58,16 +60,5 @@ def test_team_in_hashtags():
 
 def test_partial_team_names():
     """Test that partial team names don't cause false matches."""
-    test_cases = [
-        "Villarreal",  # Should not match Villa
-        "Hampton",  # Should not match Southampton
-        "Wolves",  # Should match Wolves
-        "West Ham United",  # Should match West Ham United
-    ]
-
-    for title in test_cases:
-        result = find_team_in_title(f"{title} [1] - 0 Test Team")
-        if title in ["Wolves", "West Ham United"]:
-            assert result is not None, f"Failed to match valid team: {title}"
-        else:
-            assert result is None, f"Incorrectly matched: {title}"
+    for title in ["Villarreal", "Hampton", "Wolves", "West Ham United", "Burnley"]:
+        assert find_team_in_title(f"{title} [1] - 0 Test Team") is None

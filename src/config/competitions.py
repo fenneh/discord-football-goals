@@ -17,7 +17,7 @@ class Competition:
 EPL = Competition(
     id="epl",
     name="Premier League",
-    espn_league="epl",
+    espn_league="eng.1",
     color=0x37003C,
     logo="https://resources.premierleague.com/premierleague/competitions/competition_1_small.png",
     schedule_title="Premier League",

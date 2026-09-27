@@ -22,13 +22,20 @@ def test_get_competition_lookup():
 
 
 def test_epl_competition_fields():
-    assert EPL.espn_league == "epl"
+    assert EPL.espn_league == "eng.1"
     assert EPL.schedule_title == "Premier League"
 
 
 def test_teams_dict_lookup_by_competition_id():
     epl_teams = get_teams_for_competition(EPL.id)
     assert "Arsenal" in epl_teams
+
+
+def test_2026_27_epl_teams():
+    teams = get_teams_for_competition(EPL.id)
+    assert len(teams) == 20
+    assert {"Coventry City", "Hull City", "Ipswich Town"} <= teams.keys()
+    assert not {"Burnley", "West Ham", "Wolves"} & teams.keys()
 
 
 def test_find_team_in_title_returns_epl_competition():

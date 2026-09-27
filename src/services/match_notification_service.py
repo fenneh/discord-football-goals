@@ -159,16 +159,15 @@ class MatchNotificationService:
                 await self._reset_streams_password()
 
             for competition in list_competitions():
-                if now_uk.hour == 8 and _daily_posted_key(
-                    today_str, competition
-                ) not in self.daily_posted:
-                    await self._post_daily_schedule(today_str, competition)
-
-            for competition in list_competitions():
                 matches = fetch_todays_matches(competition)
                 espn_logger.info(
                     f"ESPN check ({competition.id}): found {len(matches)} matches"
                 )
+
+                if now_uk.hour >= 8 and _daily_posted_key(
+                    today_str, competition
+                ) not in self.daily_posted:
+                    await self._post_daily_schedule(today_str, competition, matches)
 
                 await self._check_kickoffs_by_time(matches, competition)
 
@@ -187,11 +186,10 @@ class MatchNotificationService:
             espn_logger.error(f"Error in match notification check: {e}")
 
     async def _post_daily_schedule(
-        self, date_str: str, competition: Competition
+        self, date_str: str, competition: Competition, matches: List[Dict[str, Any]]
     ) -> None:
         """Post the daily schedule of matches for one competition."""
         try:
-            matches = fetch_todays_matches(competition)
             posted_key = _daily_posted_key(date_str, competition)
             if not matches:
                 espn_logger.info(

@@ -41,12 +41,6 @@ premier_league_teams = {
         "color": 0x0057B8,  # Blue
         "logo": "https://resources.premierleague.com/premierleague/badges/t36.png",
     },
-    "Burnley": {
-        "name": "Burnley",
-        "aliases": ["Burnley", "The Clarets", "BFC"],
-        "color": 0x6C1D45,  # Claret
-        "logo": "https://resources.premierleague.com/premierleague/badges/t90.png",
-    },
     "Chelsea": {
         "name": "Chelsea",
         "aliases": ["Chelsea", "The Blues", "CFC"],
@@ -59,6 +53,12 @@ premier_league_teams = {
         "color": 0x1B458F,  # Blue
         "logo": "https://resources.premierleague.com/premierleague/badges/t31.png",
     },
+    "Coventry City": {
+        "name": "Coventry City",
+        "aliases": ["Coventry City", "Coventry", "The Sky Blues", "CCFC"],
+        "color": 0x69B3E7,
+        "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/388.png",
+    },
     "Everton": {
         "name": "Everton",
         "aliases": ["Everton", "The Toffees", "EFC"],
@@ -70,6 +70,18 @@ premier_league_teams = {
         "aliases": ["Fulham", "The Cottagers", "FFC"],
         "color": 0xFFFFFF,  # White
         "logo": "https://resources.premierleague.com/premierleague/badges/t54.png",
+    },
+    "Hull City": {
+        "name": "Hull City",
+        "aliases": ["Hull City", "Hull", "The Tigers", "HCFC"],
+        "color": 0xF5A12D,
+        "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/306.png",
+    },
+    "Ipswich Town": {
+        "name": "Ipswich Town",
+        "aliases": ["Ipswich Town", "Ipswich", "The Tractor Boys", "ITFC"],
+        "color": 0x0033AA,
+        "logo": "https://a.espncdn.com/i/teamlogos/soccer/500/373.png",
     },
     "Leeds United": {
         "name": "Leeds United",
@@ -131,18 +143,6 @@ premier_league_teams = {
         "aliases": ["Tottenham", "Tottenham Hotspur", "Spurs", "THFC"],
         "color": 0x132257,  # Navy Blue
         "logo": "https://resources.premierleague.com/premierleague/badges/t6.png",
-    },
-    "West Ham": {
-        "name": "West Ham United",
-        "aliases": ["West Ham", "West Ham United", "The Hammers", "WHU", "WHUFC"],
-        "color": 0x7A263A,  # Claret
-        "logo": "https://resources.premierleague.com/premierleague/badges/t21.png",
-    },
-    "Wolves": {
-        "name": "Wolverhampton Wanderers",
-        "aliases": ["Wolves", "Wolverhampton", "Wolverhampton Wanderers", "WWFC"],
-        "color": 0xFDB913,  # Gold
-        "logo": "https://resources.premierleague.com/premierleague/badges/t39.png",
     },
 }
 

@@ -125,9 +125,9 @@ def test_team_logo_detection():
     """Test that we get the correct team logo for goals."""
     test_cases = [
         {
-            "title": "Leeds United 0 - [1] Wolves - Goncalo Guedes 19'",
-            "expected_team": "Wolves",
-            "expected_logo": "https://resources.premierleague.com/premierleague/badges/t39.png",
+            "title": "Leeds United 0 - [1] Hull City - Player 19'",
+            "expected_team": "Hull City",
+            "expected_logo": "https://a.espncdn.com/i/teamlogos/soccer/500/306.png",
             "expected_is_scoring": True,
         }
     ]

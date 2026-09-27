@@ -1,9 +1,10 @@
 """ESPN API service for fetching match data, per competition."""
 
+import json
 from datetime import date
 from typing import List, Dict, Any, Optional
-
-from espn_sports_api import Soccer
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
 
 from src.config.competitions import Competition, EPL
 from src.utils.logger import setup_logger
@@ -11,13 +12,7 @@ from src.utils.match_utils import get_current_uk_time
 
 espn_logger = setup_logger("espn_service", "espn.log")
 
-_clients: Dict[str, Soccer] = {}
-
-
-def _client_for(competition: Competition) -> Soccer:
-    if competition.id not in _clients:
-        _clients[competition.id] = Soccer(league=competition.espn_league)
-    return _clients[competition.id]
+SCOREBOARD_URL = "https://cdn.espn.com/core/soccer/scoreboard"
 
 
 def fetch_matches_for_date(
@@ -25,15 +20,20 @@ def fetch_matches_for_date(
 ) -> List[Dict[str, Any]]:
     """Fetch matches for a specific date in the given competition."""
     try:
-        data = _client_for(competition).on_date(target_date)
-        matches = _parse_events(data.get("events", []), competition)
+        params = urlencode(
+            {"xhr": "1", "league": competition.espn_league, "date": target_date.strftime("%Y%m%d")}
+        )
+        request = Request(f"{SCOREBOARD_URL}?{params}", headers={"User-Agent": "Mozilla/5.0"})
+        with urlopen(request, timeout=15) as response:
+            data = json.load(response)["content"]["sbData"]
+        matches = _parse_events(data["events"], competition)
         espn_logger.debug(
             f"Fetched {len(matches)} {competition.id} matches for {target_date}"
         )
         return matches
     except Exception as e:
         espn_logger.error(f"ESPN API request failed ({competition.id}): {e}")
-        return []
+        raise
 
 
 def fetch_todays_matches(competition: Competition = EPL) -> List[Dict[str, Any]]:
@@ -94,12 +94,18 @@ def _parse_single_event(event: Dict) -> Optional[Dict[str, Any]]:
             match["away_team"] = team_info
 
     details = competition.get("details", [])
-    match["goals"] = _parse_goal_events(details)
+    team_names = {
+        str(comp.get("team", {}).get("id")): comp.get("team", {}).get("displayName", "")
+        for comp in competitors
+    }
+    match["goals"] = _parse_goal_events(details, team_names)
 
     return match
 
 
-def _parse_goal_events(details: List[Dict]) -> List[Dict[str, Any]]:
+def _parse_goal_events(
+    details: List[Dict], team_names: Optional[Dict[str, str]] = None
+) -> List[Dict[str, Any]]:
     goals = []
     for detail in details:
         try:
@@ -113,7 +119,10 @@ def _parse_goal_events(details: List[Dict]) -> List[Dict[str, Any]]:
             clock = detail.get("clock", {})
             minute = clock.get("displayValue", "").replace("'", "").strip()
 
-            scoring_team = detail.get("team", {}).get("displayName", "")
+            scoring_team_data = detail.get("team", {})
+            scoring_team = scoring_team_data.get("displayName") or (
+                (team_names or {}).get(str(scoring_team_data.get("id")), "")
+            )
 
             athletes = detail.get("athletesInvolved", [])
             scorer = (
