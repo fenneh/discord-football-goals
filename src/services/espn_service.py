@@ -1,10 +1,9 @@
 """ESPN API service for fetching match data, per competition."""
 
-import json
 from datetime import date
 from typing import List, Dict, Any, Optional
-from urllib.parse import urlencode
-from urllib.request import Request, urlopen
+
+from espn_sports_api import Soccer
 
 from src.config.competitions import Competition, EPL
 from src.utils.logger import setup_logger
@@ -12,7 +11,13 @@ from src.utils.match_utils import get_current_uk_time
 
 espn_logger = setup_logger("espn_service", "espn.log")
 
-SCOREBOARD_URL = "https://cdn.espn.com/core/soccer/scoreboard"
+_clients: Dict[str, Soccer] = {}
+
+
+def _client_for(competition: Competition) -> Soccer:
+    if competition.id not in _clients:
+        _clients[competition.id] = Soccer(league=competition.espn_league)
+    return _clients[competition.id]
 
 
 def fetch_matches_for_date(
@@ -20,12 +25,7 @@ def fetch_matches_for_date(
 ) -> List[Dict[str, Any]]:
     """Fetch matches for a specific date in the given competition."""
     try:
-        params = urlencode(
-            {"xhr": "1", "league": competition.espn_league, "date": target_date.strftime("%Y%m%d")}
-        )
-        request = Request(f"{SCOREBOARD_URL}?{params}", headers={"User-Agent": "Mozilla/5.0"})
-        with urlopen(request, timeout=15) as response:
-            data = json.load(response)["content"]["sbData"]
+        data = _client_for(competition).on_date(target_date)
         matches = _parse_events(data["events"], competition)
         espn_logger.debug(
             f"Fetched {len(matches)} {competition.id} matches for {target_date}"

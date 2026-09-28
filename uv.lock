@@ -415,7 +415,7 @@ requires-dist = [
     { name = "asyncpraw", specifier = ">=7.7.1" },
     { name = "beautifulsoup4", specifier = ">=4.12.2" },
     { name = "brotli", specifier = ">=1.0.9" },
-    { name = "espn-sports-api", specifier = ">=0.3.1" },
+    { name = "espn-sports-api", specifier = ">=0.4.3" },
     { name = "fastapi", specifier = ">=0.104.1" },
     { name = "playwright", specifier = ">=1.57.0" },
     { name = "python-dotenv", specifier = ">=1.0.0" },
@@ -433,14 +433,14 @@ dev = [
 
 [[package]]
 name = "espn-sports-api"
-version = "0.3.1"
+version = "0.4.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ff/cb/1f81dc1d57a7b6d9ce38d19cff3667f219799a86a609f9c2856d797b1ef0/espn_sports_api-0.3.1.tar.gz", hash = "sha256:53b4570b71e6b58ebcad2fea180342c7b4b48e99d541771f3f21face476fd60c", size = 59496, upload-time = "2026-01-02T00:48:23.695Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/95/78/e70c055fe975bb634d497f800f1c6648f2cbbe17d1303711cc53c7e4e28c/espn_sports_api-0.4.3.tar.gz", hash = "sha256:80d713a704bf33c117d8b9d2c5cee179086684c72ec7feff5091b9ec0bd3a794", size = 69845, upload-time = "2026-09-28T10:08:00.157955Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/76/d7/47367bb3f2f7fa0f79cdfb9c77f8ab72bc01074f52d5d3f242803f322722/espn_sports_api-0.3.1-py3-none-any.whl", hash = "sha256:5ff205eed72373636db076a077da5594353800ebb7797747b112858b2213259c", size = 28904, upload-time = "2026-01-02T00:48:22.278Z" },
+    { url = "https://files.pythonhosted.org/packages/69/84/7e58d96b740edd068e7ebd668ccc9a96cc1124b9a7ae628a6f785c110d28/espn_sports_api-0.4.3-py3-none-any.whl", hash = "sha256:4447a9e25370243e547fe14f5c70860831869088643bec576f5455dd1a3a2265", size = 30805, upload-time = "2026-09-28T10:07:58.969828Z" },
 ]
 
 [[package]]

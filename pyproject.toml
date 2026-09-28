@@ -4,7 +4,7 @@ version = "1.0.0"
 description = "Discord bot for Premier League goal clips"
 requires-python = ">=3.11"
 dependencies = [
-    "espn-sports-api>=0.3.1",
+    "espn-sports-api>=0.4.3",
     "python-dotenv>=1.0.0",
     "asyncpraw>=7.7.1",
     "beautifulsoup4>=4.12.2",

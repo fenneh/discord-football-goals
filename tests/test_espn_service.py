@@ -1,8 +1,7 @@
 """Tests for ESPN service parsing functions."""
 
-import io
-import json
 from datetime import date
+from types import SimpleNamespace
 
 import pytest
 
@@ -16,33 +15,32 @@ from src.services.espn_service import (
 )
 
 
-def test_fetch_matches_uses_cdn_scoreboard(monkeypatch):
+def test_fetch_matches_uses_library_date_method(monkeypatch):
     event = {
         "id": "123",
         "date": "2026-09-20T13:00Z",
         "status": {"type": {"name": "STATUS_SCHEDULED"}},
         "competitions": [],
     }
-    response = {"content": {"sbData": {"events": [event]}}}
 
-    def fake_urlopen(request, timeout):
-        assert request.full_url == (
-            "https://cdn.espn.com/core/soccer/scoreboard"
-            "?xhr=1&league=eng.1&date=20260920"
-        )
-        assert timeout == 15
-        return io.BytesIO(json.dumps(response).encode())
+    def on_date(target_date):
+        assert target_date == date(2026, 9, 20)
+        return {"events": [event]}
 
-    monkeypatch.setattr(espn_service, "urlopen", fake_urlopen)
+    monkeypatch.setattr(
+        espn_service, "_client_for", lambda competition: SimpleNamespace(on_date=on_date)
+    )
     matches = espn_service.fetch_matches_for_date(date(2026, 9, 20))
     assert [match["id"] for match in matches] == ["123"]
 
 
 def test_fetch_failure_is_not_an_empty_match_day(monkeypatch):
-    def fail_urlopen(request, timeout):
+    def fail_fetch(target_date):
         raise OSError("feed unavailable")
 
-    monkeypatch.setattr(espn_service, "urlopen", fail_urlopen)
+    monkeypatch.setattr(
+        espn_service, "_client_for", lambda competition: SimpleNamespace(on_date=fail_fetch)
+    )
     with pytest.raises(OSError, match="feed unavailable"):
         espn_service.fetch_matches_for_date(date(2026, 9, 20), EPL)
 
